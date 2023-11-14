@@ -9,3 +9,5 @@
 .cxx
 local.properties
 /.externalNativeBuild
+secrets.properties
+gradle.properties

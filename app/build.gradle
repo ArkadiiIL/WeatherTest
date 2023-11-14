@@ -17,7 +17,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            resValue "string", "api_key", project.findProperty("API_KEY") ?: "default_api_key"
+        }
         release {
+            resValue "string", "api_key", project.findProperty("API_KEY") ?: "default_api_key"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

@@ -4,24 +4,24 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class WeatherResponse {
+public class WeatherResponseDto {
     @SerializedName("weather")
-    private List<WeatherInfo> weatherInfoList;
+    private List<WeatherInfoDto> weatherInfoDtoList;
 
     @SerializedName("main")
-    private MainWeatherInfo mainWeatherInfo;
+    private MainWeatherInfoDto mainWeatherInfoDto;
 
     @SerializedName("visibility")
     private int visibility;
 
     @SerializedName("wind")
-    private WindInfo windInfo;
+    private WindInfoDto windInfoDto;
 
     @SerializedName("rain")
-    private RainInfo rainInfo;
+    private RainInfoDto rainInfoDto;
 
     @SerializedName("clouds")
-    private CloudsInfo cloudsInfo;
+    private CloudsInfoDto cloudsInfoDto;
 
     @SerializedName("name")
     private String cityName;
@@ -29,28 +29,28 @@ public class WeatherResponse {
     @SerializedName("timezone")
     private int timezone;
 
-    public List<WeatherInfo> getWeatherInfoList() {
-        return weatherInfoList;
+    public List<WeatherInfoDto> getWeatherInfoList() {
+        return weatherInfoDtoList;
     }
 
-    public MainWeatherInfo getMainWeatherInfo() {
-        return mainWeatherInfo;
+    public MainWeatherInfoDto getMainWeatherInfo() {
+        return mainWeatherInfoDto;
     }
 
     public int getVisibility() {
         return visibility;
     }
 
-    public WindInfo getWindInfo() {
-        return windInfo;
+    public WindInfoDto getWindInfo() {
+        return windInfoDto;
     }
 
-    public RainInfo getRainInfo() {
-        return rainInfo;
+    public RainInfoDto getRainInfo() {
+        return rainInfoDto;
     }
 
-    public CloudsInfo getCloudsInfo() {
-        return cloudsInfo;
+    public CloudsInfoDto getCloudsInfo() {
+        return cloudsInfoDto;
     }
 
     public String getCityName() {

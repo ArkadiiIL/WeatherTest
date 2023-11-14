@@ -2,7 +2,7 @@ package com.example.weathertest.network.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class WindInfo {
+public class WindInfoDto {
     @SerializedName("speed")
     private double speed;
 

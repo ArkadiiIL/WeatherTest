@@ -2,7 +2,7 @@ package com.example.weathertest.network.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class WeatherInfo {
+public class WeatherInfoDto {
     @SerializedName("main")
     private String weatherMain;
 

@@ -1,5 +1,7 @@
 package com.example.weathertest.domain;
 
+import io.reactivex.Observable;
+
 public interface WeatherRepository {
-    WeatherInfo getWeatherInfo(Location location);
+    Observable<WeatherInfo> getWeatherInfo(Location location, String apiKey);
 }

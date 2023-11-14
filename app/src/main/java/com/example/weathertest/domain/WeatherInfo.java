@@ -1,2 +1,4 @@
-package com.example.weathertest.domain;public class WeathreInfo {
+package com.example.weathertest.domain;
+
+public class WeatherInfo {
 }

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.weathertest.R;
+import com.example.weathertest.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,21 +26,24 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
 
+    private ActivityMainBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        TextView textView = findViewById(R.id.tv_api_key);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getWeatherData().observe(this, weatherInfo ->
-                textView.setText(weatherInfo.getCityName() + " " + weatherInfo.getWeatherName())
+        viewModel.getWeatherData().observe(this, weatherInfo -> {
+                    binding.tvTemperature.setText(Double.toString(weatherInfo.getTemperature()));
+                    binding.tvCityName.setText(weatherInfo.getCityName());
+                    binding.tvMainWeather.setText(weatherInfo.getWeatherName());
+                }
         );
         viewModel.getErrorData().observe(this, throwable -> {
-            textView.setText(throwable.getMessage());
             throwable.printStackTrace();
-
         });
 
         locationListener = location -> {

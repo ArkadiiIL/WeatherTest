@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.weathertest.BuildConfig;
 import com.example.weathertest.R;
 import com.example.weathertest.databinding.ActivityMainBinding;
 
@@ -110,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadWeather(Location location) {
-        String apiKey = getString(R.string.api_key);
+        String apiKey = BuildConfig.API_KEY;
+        Log.d("Location", apiKey);
         viewModel.loadWeather(location.getLatitude(), location.getLongitude(), apiKey);
     }
 

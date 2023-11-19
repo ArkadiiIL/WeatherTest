@@ -5,38 +5,24 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class WeatherResponseDto {
-    @SerializedName("weather")
-    private List<WeatherInfoDto> weatherInfoDtoList;
-
     @SerializedName("main")
-    private MainWeatherInfoDto mainWeatherInfoDto;
+    private TemperatureDto temperature;
 
-    @SerializedName("wind")
-    private WindInfoDto windInfoDto;
+    @SerializedName("weather")
+    private List<WeatherInfoDto> weatherInfoDtos;
 
-    @SerializedName("rain")
-    private RainInfoDto rainInfoDto;
+    @SerializedName("dt")
+    private long date;
 
-    @SerializedName("clouds")
-    private CloudsInfoDto cloudsInfoDto;
-
-    public List<WeatherInfoDto> getWeatherInfoList() {
-        return weatherInfoDtoList;
+    public TemperatureDto getTemperature() {
+        return temperature;
     }
 
-    public MainWeatherInfoDto getMainWeatherInfo() {
-        return mainWeatherInfoDto;
+    public List<WeatherInfoDto> getWeatherInfoDtos() {
+        return weatherInfoDtos;
     }
 
-    public WindInfoDto getWindInfo() {
-        return windInfoDto;
-    }
-
-    public RainInfoDto getRainInfo() {
-        return rainInfoDto;
-    }
-
-    public CloudsInfoDto getCloudsInfo() {
-        return cloudsInfoDto;
+    public long getDate() {
+        return date;
     }
 }

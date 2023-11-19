@@ -9,7 +9,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -17,8 +16,12 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.weathertest.BuildConfig;
-import com.example.weathertest.R;
 import com.example.weathertest.databinding.ActivityMainBinding;
+import com.example.weathertest.domain.Weather;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,20 +36,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
         viewModel.getWeatherData().observe(this, weatherInfo -> {
-                    binding.tvTemperature.setText(getTemp(weatherInfo.getTemperature()));
+                    Weather weather = weatherInfo.getWeather();
+                    binding.tvTemperature.setText(getTemp(weather.getTemperature()));
                     binding.tvCityName.setText(weatherInfo.getCityName());
-                    binding.tvMainWeather.setText(weatherInfo.getWeatherName());
-                    binding.tvDescription.setText(weatherInfo.getWeatherDescription());
+                    binding.tvMainWeather.setText(weather.getWeatherName());
+                    binding.tvDescription.setText(weather.getWeatherDescription());
+                    binding.tvHumidity.setText(getHumidity(weather.getHumidity()));
                 }
         );
-        viewModel.getErrorData().observe(this, throwable -> {
-            throwable.printStackTrace();
-        });
+
+        ForecastAdapter adapter = new ForecastAdapter();
+        binding.rvForecast.setAdapter(adapter);
+        viewModel.getForecast().observe(this, adapter::submitList);
+        viewModel.getErrorData().observe(this, Throwable::printStackTrace);
 
         locationListener = location -> {
             loadWeather(location);
@@ -68,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
     private String getTemp(double temperature) {
         return String.format("%.1f℃", temperature);
+    }
+
+    private String getHumidity(int humidity) {
+        return "Humidity: " +
+                humidity +
+                "%";
     }
 
     private void requestLocationPermission() {

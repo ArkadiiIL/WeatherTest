@@ -3,9 +3,10 @@ package com.example.weathertest.network;
 import androidx.annotation.NonNull;
 
 import com.example.weathertest.domain.Location;
+import com.example.weathertest.domain.Weather;
 import com.example.weathertest.domain.WeatherInfo;
 import com.example.weathertest.domain.WeatherRepository;
-import com.example.weathertest.network.mapper.WeatherResponseDtoToWeatherInfoMapper;
+import com.example.weathertest.network.mapper.DtoToDomainMapper;
 import com.example.weathertest.network.model.CityDto;
 import com.example.weathertest.network.model.WeatherResponseDto;
 
@@ -19,7 +20,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherApiClient implements WeatherRepository {
-    private final static String BASE_URL_WEATHER = "https://api.openweathermap.org/data/2.5/";
+    private final static String BASE_URL_WEATHER =
+            "https://api.openweathermap.org/data/2.5/";
     private final static String BASE_URL_GEO = "https://api.openweathermap.org/geo/1.0/";
     private final static String UNITS = "metric";
     private final static String LANG = "en";
@@ -47,9 +49,24 @@ public class WeatherApiClient implements WeatherRepository {
         return Observable.zip(
                         weatherResponseDtoObservable,
                         city,
-                        WeatherResponseDtoToWeatherInfoMapper::map)
+                        DtoToDomainMapper::mapWeatherResponseAndCityToWeatherInfo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<List<Weather>> getForecast(Location location, String apiKey) {
+        return getWeatherService()
+                .getForecast(
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        UNITS,
+                        LANG,
+                        apiKey
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(DtoToDomainMapper::mapWeatherResponseForecastDtoToWeatherList);
     }
 
     @NonNull

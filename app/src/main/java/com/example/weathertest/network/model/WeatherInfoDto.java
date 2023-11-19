@@ -4,16 +4,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class WeatherInfoDto {
     @SerializedName("main")
-    private String weatherMain;
-
+    private String main;
     @SerializedName("description")
-    private String weatherDescription;
+    private String description;
 
-    public String getWeatherMain() {
-        return weatherMain;
+    public String getMain() {
+        return main;
     }
 
-    public String getWeatherDescription() {
-        return weatherDescription;
+    public String getDescription() {
+        return description;
     }
 }

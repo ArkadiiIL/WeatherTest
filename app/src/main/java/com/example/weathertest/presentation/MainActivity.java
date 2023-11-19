@@ -38,9 +38,10 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel.getWeatherData().observe(this, weatherInfo -> {
-                    binding.tvTemperature.setText(Double.toString(weatherInfo.getTemperature()));
+                    binding.tvTemperature.setText(getTemp(weatherInfo.getTemperature()));
                     binding.tvCityName.setText(weatherInfo.getCityName());
                     binding.tvMainWeather.setText(weatherInfo.getWeatherName());
+                    binding.tvDescription.setText(weatherInfo.getWeatherDescription());
                 }
         );
         viewModel.getErrorData().observe(this, throwable -> {
@@ -63,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
         return ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED;
+    }
+
+    private String getTemp(double temperature) {
+        return String.format("%.1f℃", temperature);
     }
 
     private void requestLocationPermission() {

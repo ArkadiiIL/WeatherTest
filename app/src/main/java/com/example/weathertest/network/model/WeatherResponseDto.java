@@ -11,9 +11,6 @@ public class WeatherResponseDto {
     @SerializedName("main")
     private MainWeatherInfoDto mainWeatherInfoDto;
 
-    @SerializedName("visibility")
-    private int visibility;
-
     @SerializedName("wind")
     private WindInfoDto windInfoDto;
 
@@ -23,22 +20,12 @@ public class WeatherResponseDto {
     @SerializedName("clouds")
     private CloudsInfoDto cloudsInfoDto;
 
-    @SerializedName("name")
-    private String cityName;
-
-    @SerializedName("timezone")
-    private int timezone;
-
     public List<WeatherInfoDto> getWeatherInfoList() {
         return weatherInfoDtoList;
     }
 
     public MainWeatherInfoDto getMainWeatherInfo() {
         return mainWeatherInfoDto;
-    }
-
-    public int getVisibility() {
-        return visibility;
     }
 
     public WindInfoDto getWindInfo() {
@@ -51,13 +38,5 @@ public class WeatherResponseDto {
 
     public CloudsInfoDto getCloudsInfo() {
         return cloudsInfoDto;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public int getTimezone() {
-        return timezone;
     }
 }

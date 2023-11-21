@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -17,11 +18,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.weathertest.BuildConfig;
 import com.example.weathertest.databinding.ActivityMainBinding;
+import com.example.weathertest.domain.City;
 import com.example.weathertest.domain.Weather;
+import com.example.weathertest.presentation.adapters.ForecastAdapter;
+import com.example.weathertest.presentation.adapters.TintAdapter;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,20 +47,51 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getWeatherData().observe(this, weatherInfo -> {
                     Weather weather = weatherInfo.getWeather();
                     binding.tvTemperature.setText(getTemp(weather.getTemperature()));
-                    binding.tvCityName.setText(weatherInfo.getCityName());
+                    binding.tvCityName.setText(weatherInfo.getCity().getName());
                     binding.tvMainWeather.setText(weather.getWeatherName());
                     binding.tvDescription.setText(weather.getWeatherDescription());
                     binding.tvHumidity.setText(getHumidity(weather.getHumidity()));
                 }
         );
+        binding.tvCityName.setSelected(true);
 
-        ForecastAdapter adapter = new ForecastAdapter();
-        binding.rvForecast.setAdapter(adapter);
-        viewModel.getForecast().observe(this, adapter::submitList);
+        ForecastAdapter forecastAdapter = new ForecastAdapter();
+        binding.rvForecast.setAdapter(forecastAdapter);
+
+        TintAdapter tintAdapter = new TintAdapter();
+        binding.rvTint.setAdapter(tintAdapter);
+        tintAdapter.onCityClickListener = city -> {
+            loadWeather(city.getLatitude(), city.getLongitude());
+            binding.searchView.setQuery("", false);
+        };
+
+        viewModel.getCities().observe(this, tintAdapter::submitList);
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                    City firstCity = tintAdapter.getCurrentList().get(0);
+                    if (firstCity != null) {
+                        loadWeather(firstCity.getLatitude(), firstCity.getLongitude());
+                    }
+                binding.searchView.setQuery("", false);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if(s.length() >= 3) {
+                    viewModel.findCity(s, BuildConfig.API_KEY);
+                    return true;
+                }
+                tintAdapter.submitList(null);
+                return false;
+            }
+        });
+        viewModel.getForecast().observe(this, forecastAdapter::submitList);
         viewModel.getErrorData().observe(this, Throwable::printStackTrace);
 
         locationListener = location -> {
-            loadWeather(location);
+            loadWeather(location.getLatitude(), location.getLongitude());
             stopLocationUpdates();
         };
 
@@ -108,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     private void getLocation() {
         if (locationManager != null) {
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) loadWeather(location);
+            if (location != null) loadWeather(location.getLatitude(), location.getLongitude());
             else {
                 startLocationUpdates();
             }
@@ -129,10 +163,18 @@ public class MainActivity extends AppCompatActivity {
         locationManager.removeUpdates(locationListener);
     }
 
-    private void loadWeather(Location location) {
+    private void loadWeather(double latitude, double longitude) {
         String apiKey = BuildConfig.API_KEY;
         Log.d("Location", apiKey);
-        viewModel.loadWeather(location.getLatitude(), location.getLongitude(), apiKey);
+        viewModel.loadWeather(latitude, longitude, apiKey);
+    }
+
+    private List<City> getCities() {
+        List<City> list = new ArrayList<>();
+        list.add(new City("London", "GB", 0, 0));
+        list.add(new City("Moscow", "RU", 0, 0));
+        list.add(new City("Paris", "FR", 0, 0));
+        return list;
     }
 
     @Override

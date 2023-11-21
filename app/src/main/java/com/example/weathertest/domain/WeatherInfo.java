@@ -1,23 +1,23 @@
 package com.example.weathertest.domain;
 
-import java.util.List;
-
 public class WeatherInfo {
-    private final String cityName;
+    private final City city;
 
     private final Weather weather;
 
     public WeatherInfo(
-            String cityName,
+            City city,
             Weather weather
     ) {
-        this.cityName = cityName;
+        this.city = city;
         this.weather = weather;
     }
 
-    public String getCityName() {
-        return cityName;
+    public City getCity() {
+        return city;
     }
 
-    public Weather getWeather() {return weather;}
+    public Weather getWeather() {
+        return weather;
+    }
 }

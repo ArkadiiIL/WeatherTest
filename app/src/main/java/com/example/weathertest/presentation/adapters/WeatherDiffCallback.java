@@ -1,4 +1,4 @@
-package com.example.weathertest.presentation;
+package com.example.weathertest.presentation.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;

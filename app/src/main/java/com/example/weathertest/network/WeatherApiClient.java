@@ -2,7 +2,7 @@ package com.example.weathertest.network;
 
 import androidx.annotation.NonNull;
 
-import com.example.weathertest.domain.Location;
+import com.example.weathertest.domain.City;
 import com.example.weathertest.domain.Weather;
 import com.example.weathertest.domain.WeatherInfo;
 import com.example.weathertest.domain.WeatherRepository;
@@ -26,23 +26,25 @@ public class WeatherApiClient implements WeatherRepository {
     private final static String UNITS = "metric";
     private final static String LANG = "en";
 
+    private final static int LIMIT = 5;
+
     @Override
-    public Observable<WeatherInfo> getWeatherInfo(Location location, String apiKey) {
+    public Observable<WeatherInfo> getWeatherInfo(double latitude, double longitude, String apiKey) {
         WeatherService weatherService = getWeatherService();
 
         GeocodingService geocodingService = getGeocodingService();
 
         Observable<WeatherResponseDto> weatherResponseDtoObservable = weatherService.getWeather(
-                location.getLatitude(),
-                location.getLongitude(),
+                latitude,
+                longitude,
                 UNITS,
                 LANG,
                 apiKey
         );
 
         Observable<List<CityDto>> city = geocodingService.getCity(
-                location.getLatitude(),
-                location.getLongitude(),
+                latitude,
+                longitude,
                 apiKey
         );
 
@@ -55,11 +57,11 @@ public class WeatherApiClient implements WeatherRepository {
     }
 
     @Override
-    public Observable<List<Weather>> getForecast(Location location, String apiKey) {
+    public Observable<List<Weather>> getForecast(double latitude, double longitude, String apiKey) {
         return getWeatherService()
                 .getForecast(
-                        location.getLatitude(),
-                        location.getLongitude(),
+                        latitude,
+                        longitude,
                         UNITS,
                         LANG,
                         apiKey
@@ -67,6 +69,15 @@ public class WeatherApiClient implements WeatherRepository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(DtoToDomainMapper::mapWeatherResponseForecastDtoToWeatherList);
+    }
+
+    @Override
+    public Observable<List<City>> getCitiesByCityName(String cityName, String apiKey) {
+        return getGeocodingService()
+                .getLocationByCityName(cityName,LIMIT, apiKey)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(DtoToDomainMapper::mapListCityDtoToCities);
     }
 
     @NonNull

@@ -16,4 +16,14 @@ public interface GeocodingService {
             @Query("lon") double longitude,
             @Query("appid") String apiKey
     );
+
+    @GET("direct")
+    Observable<List<CityDto>> getLocationByCityName(
+            @Query("q")
+            String cityName,
+            @Query("limit")
+            int limit,
+            @Query("appid")
+            String apiKey
+    );
 }

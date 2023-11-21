@@ -1,5 +1,6 @@
 package com.example.weathertest.network.mapper;
 
+import com.example.weathertest.domain.City;
 import com.example.weathertest.domain.Weather;
 import com.example.weathertest.domain.WeatherInfo;
 import com.example.weathertest.network.model.CityDto;
@@ -17,7 +18,7 @@ public class DtoToDomainMapper {
             List<CityDto> city
     ) {
         return new WeatherInfo(
-                city.get(0).getName(),
+                mapCityDtoToCity(city.get(0)),
                 weatherResponseDtoToWeather(response)
         );
     }
@@ -30,6 +31,22 @@ public class DtoToDomainMapper {
                 .stream()
                 .map(DtoToDomainMapper::weatherResponseDtoToWeather)
                 .collect(Collectors.toList());
+    }
+
+    public static List<City> mapListCityDtoToCities(List<CityDto> cityDtos) {
+        return cityDtos
+                .stream()
+                .map(DtoToDomainMapper::mapCityDtoToCity)
+                .collect(Collectors.toList());
+    }
+
+    private static City mapCityDtoToCity(CityDto cityDto) {
+        return new City(
+                cityDto.getName(),
+                cityDto.getCountry(),
+                cityDto.getLatitude(),
+                cityDto.getLongitude()
+        );
     }
 
     private static Weather weatherResponseDtoToWeather(WeatherResponseDto response) {

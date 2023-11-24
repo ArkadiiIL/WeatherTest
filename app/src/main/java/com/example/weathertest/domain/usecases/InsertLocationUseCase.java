@@ -3,6 +3,8 @@ package com.example.weathertest.domain.usecases;
 import com.example.weathertest.domain.DomainLocation;
 import com.example.weathertest.domain.LocationRepository;
 
+import io.reactivex.Completable;
+
 public class InsertLocationUseCase {
     private final LocationRepository repository;
 
@@ -10,7 +12,7 @@ public class InsertLocationUseCase {
         this.repository = repository;
     }
 
-    public void insertLocation(DomainLocation location) {
-        repository.insertLocation(location);
+    public Completable insertLocation(DomainLocation location) {
+        return repository.insertLocation(location);
     }
 }

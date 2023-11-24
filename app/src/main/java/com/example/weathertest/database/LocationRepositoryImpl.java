@@ -11,10 +11,13 @@ import com.example.weathertest.domain.LocationRepository;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
+
 public class LocationRepositoryImpl implements LocationRepository {
     private final LocationDatabase database;
 
-    LocationRepositoryImpl(Context context) {
+    public LocationRepositoryImpl(Context context) {
         database = Room.databaseBuilder(
                         context,
                         LocationDatabase.class,
@@ -23,21 +26,37 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void insertLocation(DomainLocation domainLocation) {
-        database
-                .locationDao()
-                .insertLocation(DatabaseMapper.mapDomainLocationToLocationDb(domainLocation));
+    public Completable insertLocation(DomainLocation domainLocation) {
+        return Completable.fromAction(() -> database
+                        .locationDao()
+                        .insertLocation(DatabaseMapper.mapDomainLocationToLocationDb(domainLocation)))
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public void deleteLocation(DomainLocation domainLocation) {
-        database
-                .locationDao()
-                .deleteLocation(DatabaseMapper.mapDomainLocationToLocationDb(domainLocation));
+    public Completable deleteLocation(DomainLocation domainLocation) {
+        return Completable.fromAction(() ->
+                        database
+                                .locationDao()
+                                .deleteLocation(domainLocation.getLatitude(), domainLocation.getLongitude())
+                )
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public LiveData<DomainLocation> getLocation(DomainLocation location) {
+        LiveData<LocationDb> locationDb = database.locationDao()
+                .getLocationDbByLatitudeAndLongitude(
+                        location.getLatitude(),
+                        location.getLongitude()
+                );
+        return DatabaseMapper.mapLiveLocationDbToDomainLocation(locationDb);
     }
 
     @Override
     public LiveData<List<DomainLocation>> getAllLocations() {
         return DatabaseMapper.mapLocationDbListToDomain(database.locationDao().getAllLocations());
     }
+
+
 }

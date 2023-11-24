@@ -4,8 +4,14 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+
 public interface LocationRepository {
-    void insertLocation(DomainLocation domainLocation);
-    void deleteLocation(DomainLocation domainLocation);
+    Completable insertLocation(DomainLocation domainLocation);
+
+    Completable deleteLocation(DomainLocation domainLocation);
+
+    LiveData<DomainLocation> getLocation(DomainLocation location);
+
     LiveData<List<DomainLocation>> getAllLocations();
 }

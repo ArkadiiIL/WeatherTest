@@ -13,13 +13,24 @@
 
     <Button
         style="?attr/materialIconButtonFilledStyle"
-        android:id="@+id/favoriteButton"
+        android:id="@+id/insert_favorite_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
         app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
         app:icon="@drawable/ic_favorite_border"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        />
+    <Button
+        style="?attr/materialIconButtonFilledStyle"
+        android:id="@+id/delete_favorite_Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
+        app:icon="@drawable/ic_favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         />
     <Button
         style="?attr/materialIconButtonFilledStyle"

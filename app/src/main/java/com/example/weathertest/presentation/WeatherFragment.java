@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.weathertest.BuildConfig;
 import com.example.weathertest.databinding.FragmentWeatherBinding;
+import com.example.weathertest.domain.DomainLocation;
 import com.example.weathertest.domain.Weather;
 import com.example.weathertest.domain.WeatherInfo;
 import com.example.weathertest.presentation.adapters.ForecastAdapter;
@@ -26,6 +27,7 @@ public class WeatherFragment extends Fragment {
     private FragmentWeatherBinding binding;
     private WeatherViewModel viewModel;
     private CompositeDisposable compositeDisposable;
+    private boolean isFavorite = false;
 
     @Nullable
     @Override
@@ -55,13 +57,48 @@ public class WeatherFragment extends Fragment {
         compositeDisposable.add(forecastDisposable);
 
         if (isCurrentLocation) {
-            binding.favoriteButton.setVisibility(View.INVISIBLE);
-            binding.deleteButton.setVisibility(View.VISIBLE);
+            binding.deleteFavoriteButton.setVisibility(View.GONE);
+            binding.insertFavoriteButton.setVisibility(View.GONE);
+            binding.deleteButton.setVisibility(View.GONE);
         } else {
-
+            DomainLocation domainLocation =
+                    new DomainLocation(latitude, longitude, false);
+            viewModel.getLocation(domainLocation).observe(getViewLifecycleOwner(), location -> {
+                if (location == null) {
+                    setFavoriteFalse();
+                } else {
+                    setFavoriteTrue();
+                }
+            });
+            binding.deleteFavoriteButton.setOnClickListener(view -> {
+                    setFavoriteFalse();
+                    compositeDisposable.add(viewModel.deleteLocation(domainLocation).subscribe());
+            });
+            binding.insertFavoriteButton.setOnClickListener(view ->{
+                setFavoriteTrue();
+                compositeDisposable.add(viewModel.insertLocation(domainLocation).subscribe());
+            });
+            binding.deleteButton.setOnClickListener(view -> {
+                DeleteCity deleteCity = (DeleteCity) getActivity();
+                deleteCity.deleteCity(latitude, longitude);
+            });
         }
 
         return binding.getRoot();
+    }
+
+    private void setFavoriteFalse() {
+        this.isFavorite = false;
+        binding.deleteButton.setVisibility(View.VISIBLE);
+        binding.deleteFavoriteButton.setVisibility(View.GONE);
+        binding.insertFavoriteButton.setVisibility(View.VISIBLE);
+    }
+
+    private void setFavoriteTrue() {
+        this.isFavorite = true;
+        binding.deleteButton.setVisibility(View.GONE);
+        binding.deleteFavoriteButton.setVisibility(View.VISIBLE);
+        binding.insertFavoriteButton.setVisibility(View.GONE);
     }
 
     private void setWeatherData(WeatherInfo weatherInfo) {

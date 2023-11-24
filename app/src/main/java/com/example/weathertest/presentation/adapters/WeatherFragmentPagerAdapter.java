@@ -41,9 +41,14 @@ public class WeatherFragmentPagerAdapter extends FragmentStateAdapter {
         return domainLocations;
     }
 
-    public int updateList(List<DomainLocation> list) {
+    public int addElement(List<DomainLocation> list) {
         domainLocations = list;
-        notifyDataSetChanged();
+        notifyItemInserted(list.size());
         return domainLocations.size() - 1;
+    }
+
+    public void deleteElement(List<DomainLocation> list, int index) {
+        domainLocations = list;
+        notifyItemRemoved(index - 1);
     }
 }

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -29,7 +30,7 @@ import java.util.List;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DeleteCity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private MainViewModel viewModel;
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private WeatherFragmentPagerAdapter pagerAdapter;
     private CompositeDisposable compositeDisposable;
+    private boolean isFirstGetLocation = true;
+    private int startPage;
+    private static final String KEY_CURRENT_PAGE = "current_page";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if (savedInstanceState != null) {
+            startPage = savedInstanceState.getInt(KEY_CURRENT_PAGE);
+        }
 
         TintAdapter tintAdapter = new TintAdapter();
         binding.rvTint.setAdapter(tintAdapter);
@@ -157,6 +165,12 @@ public class MainActivity extends AppCompatActivity {
         weatherFragments.add(location);
         pagerAdapter = new WeatherFragmentPagerAdapter(this, weatherFragments);
         binding.viewPager.setAdapter(pagerAdapter);
+
+        viewModel.getAllLocations().observe(this, list -> {
+            list.forEach(domainLocation ->
+                    addCity(domainLocation.getLatitude(), domainLocation.getLongitude()));
+            isFirstGetLocation = false;
+        });
     }
 
     private void addCity(double latitude, double longitude) {
@@ -171,9 +185,26 @@ public class MainActivity extends AppCompatActivity {
             List<DomainLocation> oldList = pagerAdapter.getList();
             List<DomainLocation> newList = new ArrayList<>(oldList);
             newList.add(location);
-            int position = pagerAdapter.updateList(newList);
-            binding.viewPager.setCurrentItem(position);
+            int position = pagerAdapter.addElement(newList);
+            binding.viewPager.setCurrentItem(isFirstGetLocation ? startPage : position);
         }
+    }
+
+    @Override
+    public void deleteCity(double latitude, double longitude) {
+        DomainLocation location =
+                new DomainLocation(latitude, longitude, false);
+        int index = findFragment(location);
+        List<DomainLocation> oldList = pagerAdapter.getList();
+        List<DomainLocation> newList = new ArrayList<>(oldList);
+        newList.remove(index);
+        pagerAdapter.deleteElement(newList, index);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_PAGE, binding.viewPager.getCurrentItem());
     }
 
     private int findFragment(DomainLocation location) {

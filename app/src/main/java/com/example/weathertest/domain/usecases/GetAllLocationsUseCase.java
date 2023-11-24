@@ -10,7 +10,7 @@ import java.util.List;
 public class GetAllLocationsUseCase {
     private final LocationRepository repository;
 
-    GetAllLocationsUseCase(LocationRepository repository) {
+    public GetAllLocationsUseCase(LocationRepository repository) {
         this.repository = repository;
     }
 

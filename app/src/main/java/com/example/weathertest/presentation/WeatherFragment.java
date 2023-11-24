@@ -27,7 +27,6 @@ public class WeatherFragment extends Fragment {
     private FragmentWeatherBinding binding;
     private WeatherViewModel viewModel;
     private CompositeDisposable compositeDisposable;
-    private boolean isFavorite = false;
 
     @Nullable
     @Override
@@ -50,7 +49,11 @@ public class WeatherFragment extends Fragment {
         String apiKey = BuildConfig.API_KEY;
 
         Disposable weatherInfoDisposable = viewModel.getWeatherInfo(latitude, longitude, apiKey)
-                .subscribe(this::setWeatherData);
+                .subscribe(weatherInfo -> {
+                    setWeatherData(weatherInfo);
+                    binding.progressCircular.setVisibility(View.GONE);
+                    binding.fragmentContent.setVisibility(View.VISIBLE);
+                });
         Disposable forecastDisposable = viewModel.getForecast(latitude, longitude, apiKey)
                 .subscribe(list -> forecastAdapter.submitList(list));
         compositeDisposable.add(weatherInfoDisposable);
@@ -88,14 +91,12 @@ public class WeatherFragment extends Fragment {
     }
 
     private void setFavoriteFalse() {
-        this.isFavorite = false;
         binding.deleteButton.setVisibility(View.VISIBLE);
         binding.deleteFavoriteButton.setVisibility(View.GONE);
         binding.insertFavoriteButton.setVisibility(View.VISIBLE);
     }
 
     private void setFavoriteTrue() {
-        this.isFavorite = true;
         binding.deleteButton.setVisibility(View.GONE);
         binding.deleteFavoriteButton.setVisibility(View.VISIBLE);
         binding.insertFavoriteButton.setVisibility(View.GONE);

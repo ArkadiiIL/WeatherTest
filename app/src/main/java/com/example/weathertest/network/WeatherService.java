@@ -5,12 +5,13 @@ import com.example.weathertest.network.model.WeatherResponseDto;
 import com.example.weathertest.network.model.WeatherResponseForecastDto;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface WeatherService {
     @GET("weather")
-    Observable<WeatherResponseDto> getWeather(
+    Single<WeatherResponseDto> getWeather(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
             @Query("units") String units,
@@ -18,7 +19,7 @@ public interface WeatherService {
             @Query("appid") String apiKey
     );
     @GET("forecast")
-    Observable<WeatherResponseForecastDto> getForecast(
+    Single<WeatherResponseForecastDto> getForecast(
             @Query("lat") double latitude,
             @Query("lon") double longitude,
             @Query("units") String units,

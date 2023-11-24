@@ -13,6 +13,7 @@ import com.example.weathertest.network.model.WeatherResponseDto;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -29,12 +30,12 @@ public class WeatherApiClient implements WeatherRepository {
     private final static int LIMIT = 5;
 
     @Override
-    public Observable<WeatherInfo> getWeatherInfo(double latitude, double longitude, String apiKey) {
+    public Single<WeatherInfo> getWeatherInfo(double latitude, double longitude, String apiKey) {
         WeatherService weatherService = getWeatherService();
 
         GeocodingService geocodingService = getGeocodingService();
 
-        Observable<WeatherResponseDto> weatherResponseDtoObservable = weatherService.getWeather(
+        Single<WeatherResponseDto> weatherResponseDtoObservable = weatherService.getWeather(
                 latitude,
                 longitude,
                 UNITS,
@@ -42,13 +43,13 @@ public class WeatherApiClient implements WeatherRepository {
                 apiKey
         );
 
-        Observable<List<CityDto>> city = geocodingService.getCity(
+        Single<List<CityDto>> city = geocodingService.getCity(
                 latitude,
                 longitude,
                 apiKey
         );
 
-        return Observable.zip(
+        return Single.zip(
                         weatherResponseDtoObservable,
                         city,
                         DtoToDomainMapper::mapWeatherResponseAndCityToWeatherInfo)
@@ -57,7 +58,7 @@ public class WeatherApiClient implements WeatherRepository {
     }
 
     @Override
-    public Observable<List<Weather>> getForecast(double latitude, double longitude, String apiKey) {
+    public Single<List<Weather>> getForecast(double latitude, double longitude, String apiKey) {
         return getWeatherService()
                 .getForecast(
                         latitude,
@@ -72,7 +73,7 @@ public class WeatherApiClient implements WeatherRepository {
     }
 
     @Override
-    public Observable<List<City>> getCitiesByCityName(String cityName, String apiKey) {
+    public Single<List<City>> getCitiesByCityName(String cityName, String apiKey) {
         return getGeocodingService()
                 .getLocationByCityName(cityName,LIMIT, apiKey)
                 .subscribeOn(Schedulers.io())

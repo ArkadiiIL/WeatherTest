@@ -1,13 +1,11 @@
 package com.example.weathertest.domain;
 
-import android.location.Location;
-
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface WeatherRepository {
-    Observable<WeatherInfo> getWeatherInfo(double latitude, double longitude, String apiKey);
-    Observable<List<Weather>> getForecast(double latitude, double longitude, String apiKey);
-    Observable<List<City>> getCitiesByCityName(String cityName, String apiKey);
+    Single<WeatherInfo> getWeatherInfo(double latitude, double longitude, String apiKey);
+    Single<List<Weather>> getForecast(double latitude, double longitude, String apiKey);
+    Single<List<City>> getCitiesByCityName(String cityName, String apiKey);
 }

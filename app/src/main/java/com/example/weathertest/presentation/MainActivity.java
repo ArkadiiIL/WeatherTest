@@ -19,12 +19,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.weathertest.BuildConfig;
 import com.example.weathertest.databinding.ActivityMainBinding;
 import com.example.weathertest.domain.City;
-import com.example.weathertest.domain.Weather;
-import com.example.weathertest.presentation.adapters.ForecastAdapter;
+import com.example.weathertest.domain.DomainLocation;
 import com.example.weathertest.presentation.adapters.TintAdapter;
+import com.example.weathertest.presentation.adapters.WeatherFragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private MainViewModel viewModel;
     private LocationManager locationManager;
     private LocationListener locationListener;
-
     private ActivityMainBinding binding;
-
+    private WeatherFragmentPagerAdapter pagerAdapter;
+    private CompositeDisposable compositeDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,54 +47,43 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        viewModel.getWeatherData().observe(this, weatherInfo -> {
-                    Weather weather = weatherInfo.getWeather();
-                    binding.tvTemperature.setText(getTemp(weather.getTemperature()));
-                    binding.tvCityName.setText(weatherInfo.getCity().getName());
-                    binding.tvMainWeather.setText(weather.getWeatherName());
-                    binding.tvDescription.setText(weather.getWeatherDescription());
-                    binding.tvHumidity.setText(getHumidity(weather.getHumidity()));
-                }
-        );
-        binding.tvCityName.setSelected(true);
-
-        ForecastAdapter forecastAdapter = new ForecastAdapter();
-        binding.rvForecast.setAdapter(forecastAdapter);
-
         TintAdapter tintAdapter = new TintAdapter();
         binding.rvTint.setAdapter(tintAdapter);
         tintAdapter.onCityClickListener = city -> {
-            loadWeather(city.getLatitude(), city.getLongitude());
+            addCity(city.getLatitude(), city.getLongitude());
             binding.searchView.setQuery("", false);
         };
 
-        viewModel.getCities().observe(this, tintAdapter::submitList);
+        compositeDisposable = new CompositeDisposable();
+
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                if (tintAdapter.getCurrentList().size() > 0) {
                     City firstCity = tintAdapter.getCurrentList().get(0);
                     if (firstCity != null) {
-                        loadWeather(firstCity.getLatitude(), firstCity.getLongitude());
+                        addCity(firstCity.getLatitude(), firstCity.getLongitude());
                     }
+                }
                 binding.searchView.setQuery("", false);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                if(s.length() >= 3) {
-                    viewModel.findCity(s, BuildConfig.API_KEY);
+                if (s.length() >= 3) {
+                    Disposable disposable = viewModel.findCity(s, BuildConfig.API_KEY)
+                            .subscribe(list -> tintAdapter.submitList(list));
+                    compositeDisposable.add(disposable);
                     return true;
                 }
                 tintAdapter.submitList(null);
                 return false;
             }
         });
-        viewModel.getForecast().observe(this, forecastAdapter::submitList);
-        viewModel.getErrorData().observe(this, Throwable::printStackTrace);
 
         locationListener = location -> {
-            loadWeather(location.getLatitude(), location.getLongitude());
+            addCurrentLocation(location.getLatitude(), location.getLongitude());
             stopLocationUpdates();
         };
 
@@ -106,16 +98,6 @@ public class MainActivity extends AppCompatActivity {
         return ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED;
-    }
-
-    private String getTemp(double temperature) {
-        return String.format("%.1f℃", temperature);
-    }
-
-    private String getHumidity(int humidity) {
-        return "Humidity: " +
-                humidity +
-                "%";
     }
 
     private void requestLocationPermission() {
@@ -142,7 +124,10 @@ public class MainActivity extends AppCompatActivity {
     private void getLocation() {
         if (locationManager != null) {
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) loadWeather(location.getLatitude(), location.getLongitude());
+            if (location != null) addCurrentLocation(
+                    location.getLatitude(),
+                    location.getLongitude()
+            );
             else {
                 startLocationUpdates();
             }
@@ -163,23 +148,42 @@ public class MainActivity extends AppCompatActivity {
         locationManager.removeUpdates(locationListener);
     }
 
-    private void loadWeather(double latitude, double longitude) {
+    private void addCurrentLocation(double latitude, double longitude) {
         String apiKey = BuildConfig.API_KEY;
         Log.d("Location", apiKey);
-        viewModel.loadWeather(latitude, longitude, apiKey);
+        DomainLocation location =
+                new DomainLocation(latitude, longitude, true);
+        List<DomainLocation> weatherFragments = new ArrayList<>();
+        weatherFragments.add(location);
+        pagerAdapter = new WeatherFragmentPagerAdapter(this, weatherFragments);
+        binding.viewPager.setAdapter(pagerAdapter);
     }
 
-    private List<City> getCities() {
-        List<City> list = new ArrayList<>();
-        list.add(new City("London", "GB", 0, 0));
-        list.add(new City("Moscow", "RU", 0, 0));
-        list.add(new City("Paris", "FR", 0, 0));
-        return list;
+    private void addCity(double latitude, double longitude) {
+        DomainLocation location =
+                new DomainLocation(latitude, longitude, false);
+        int index = findFragment(location);
+        if (index != -1) {
+            binding.viewPager.setCurrentItem(index);
+        } else {
+            String apiKey = BuildConfig.API_KEY;
+            Log.d("Location", apiKey);
+            List<DomainLocation> oldList = pagerAdapter.getList();
+            List<DomainLocation> newList = new ArrayList<>(oldList);
+            newList.add(location);
+            int position = pagerAdapter.updateList(newList);
+            binding.viewPager.setCurrentItem(position);
+        }
+    }
+
+    private int findFragment(DomainLocation location) {
+        return pagerAdapter.getList().indexOf(location);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        compositeDisposable.clear();
         stopLocationUpdates();
     }
 }

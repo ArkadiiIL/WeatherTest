@@ -32,71 +32,10 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.40" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_vertical"
-        android:layout_width="wrap_content"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25" />
-
-    <TextView
-        android:id="@+id/tv_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
         app:layout_constraintTop_toBottomOf="@+id/rv_tint"
-        tools:text="15℃" />
-
-    <TextView
-        android:id="@+id/tv_city_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:maxWidth="180dp"
-        app:layout_constraintStart_toEndOf="@id/tv_temperature"
-        app:layout_constraintTop_toBottomOf="@id/rv_tint"
-        tools:text="London" />
-
-    <TextView
-        android:id="@+id/tv_main_weather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@id/tv_city_name"
-        app:layout_constraintTop_toBottomOf="@+id/tv_city_name"
-        tools:text="Cloudy" />
-
-    <TextView
-        android:id="@+id/tv_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@id/tv_main_weather"
-        app:layout_constraintTop_toBottomOf="@id/tv_main_weather"
-        tools:text="Broken clouds" />
-
-    <TextView
-        android:id="@+id/tv_humidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_description"
-        app:layout_constraintTop_toBottomOf="@+id/tv_description"
-        tools:text="Humidity: 50%" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_forecast"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_humidity"
-        tools:listitem="@layout/item_forecast_rv" />
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

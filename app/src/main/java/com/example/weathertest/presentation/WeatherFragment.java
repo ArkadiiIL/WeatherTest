@@ -53,12 +53,14 @@ public class WeatherFragment extends Fragment {
 
         Disposable weatherInfoDisposable = viewModel.getWeatherInfo(latitude, longitude, apiKey)
                 .subscribe(weatherInfo -> {
-                    setWeatherData(weatherInfo);
-                    binding.progressCircular.setVisibility(View.GONE);
-                    binding.fragmentContent.setVisibility(View.VISIBLE);
-                });
+                            setWeatherData(weatherInfo);
+                            binding.progressCircular.setVisibility(View.GONE);
+                            binding.fragmentContent.setVisibility(View.VISIBLE);
+                        },
+                        Throwable::printStackTrace
+                );
         Disposable forecastDisposable = viewModel.getForecast(latitude, longitude, apiKey)
-                .subscribe(list -> forecastAdapter.submitList(list));
+                .subscribe(forecastAdapter::submitList, Throwable::printStackTrace);
         compositeDisposable.add(weatherInfoDisposable);
         compositeDisposable.add(forecastDisposable);
 
@@ -77,10 +79,10 @@ public class WeatherFragment extends Fragment {
                 }
             });
             binding.deleteFavoriteButton.setOnClickListener(view -> {
-                    setFavoriteFalse();
-                    compositeDisposable.add(viewModel.deleteLocation(domainLocation).subscribe());
+                setFavoriteFalse();
+                compositeDisposable.add(viewModel.deleteLocation(domainLocation).subscribe());
             });
-            binding.insertFavoriteButton.setOnClickListener(view ->{
+            binding.insertFavoriteButton.setOnClickListener(view -> {
                 setFavoriteTrue();
                 compositeDisposable.add(viewModel.insertLocation(domainLocation).subscribe());
             });

@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements DeleteCity {
 
     private void addCurrentLocation(double latitude, double longitude) {
         String apiKey = BuildConfig.API_KEY;
-        Log.d("Location", apiKey);
         DomainLocation location =
                 new DomainLocation(latitude, longitude, true);
         List<DomainLocation> weatherFragments = new ArrayList<>();
@@ -180,8 +179,6 @@ public class MainActivity extends AppCompatActivity implements DeleteCity {
         if (index != -1) {
             binding.viewPager.setCurrentItem(index);
         } else {
-            String apiKey = BuildConfig.API_KEY;
-            Log.d("Location", apiKey);
             List<DomainLocation> oldList = pagerAdapter.getList();
             List<DomainLocation> newList = new ArrayList<>(oldList);
             newList.add(location);

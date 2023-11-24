@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <ProgressBar
         android:id="@+id/progress_circular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        />
+        android:visibility="visible" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical"
             android:layout_width="wrap_content"
@@ -24,46 +25,53 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.25" />
 
-        <Button
-            style="?attr/materialIconButtonFilledStyle"
-            android:id="@+id/insert_favorite_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
-            app:icon="@drawable/ic_favorite_border"
+        <ImageView
+            android:id="@+id/iv_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            app:layout_constraintBottom_toTopOf="@+id/tv_temperature"
+            app:layout_constraintStart_toEndOf="@+id/guideline_vertical"
+            app:layout_constraintTop_toTopOf="@+id/tv_city_name" />
+
         <Button
+            android:id="@+id/insert_favorite_button"
             style="?attr/materialIconButtonFilledStyle"
-            android:id="@+id/delete_favorite_Button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_favorite_border"
             app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
-            app:icon="@drawable/ic_favorite"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/delete_favorite_Button"
+            style="?attr/materialIconButtonFilledStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            />
-        <Button
-            style="?attr/materialIconButtonFilledStyle"
-            android:id="@+id/deleteButton"
-            app:layout_constraintStart_toEndOf="@id/tv_description"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:icon="@drawable/ic_favorite"
             app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
-            app:icon="@drawable/ic_delete"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_vertical"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/deleteButton"
+            style="?attr/materialIconButtonFilledStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            app:icon="@drawable/ic_delete"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_description" />
 
         <TextView
             android:id="@+id/tv_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/rv_forecast"
             app:layout_constraintStart_toEndOf="@id/guideline_vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/rv_forecast"
+            app:layout_constraintTop_toBottomOf="@+id/iv_weather"
             tools:text="15℃" />
 
         <TextView
@@ -71,11 +79,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:singleLine="true"
             android:ellipsize="marquee"
             android:maxWidth="180dp"
+            android:singleLine="true"
+            app:layout_constraintBottom_toTopOf="@id/tv_main_weather"
             app:layout_constraintStart_toEndOf="@id/tv_temperature"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="London" />
 
         <TextView
@@ -83,8 +91,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_description"
             app:layout_constraintStart_toStartOf="@id/tv_city_name"
-            app:layout_constraintTop_toBottomOf="@+id/tv_city_name"
             tools:text="Cloudy" />
 
         <TextView
@@ -92,8 +100,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_humidity"
             app:layout_constraintStart_toStartOf="@id/tv_main_weather"
-            app:layout_constraintTop_toBottomOf="@id/tv_main_weather"
             tools:text="Broken clouds" />
 
         <TextView
@@ -102,15 +110,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_temperature"
             app:layout_constraintStart_toStartOf="@+id/tv_description"
-            app:layout_constraintTop_toBottomOf="@+id/tv_description"
             tools:text="Humidity: 50%" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_forecast"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"

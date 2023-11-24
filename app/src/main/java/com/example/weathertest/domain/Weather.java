@@ -7,21 +7,23 @@ public class Weather {
     private final String weatherDescription;
     private final double temperature;
     private final int humidity;
-
     private final long date;
+    private final String icon;
 
     public Weather(
             String weatherName,
             String weatherDescription,
             double temperature,
             int humidity,
-            long date
+            long date,
+            String icon
     ) {
         this.weatherName = weatherName;
         this.weatherDescription = weatherDescription;
         this.temperature = temperature;
         this.humidity = humidity;
         this.date = date;
+        this.icon = icon;
     }
 
     public String getWeatherName() {
@@ -42,6 +44,10 @@ public class Weather {
 
     public long getDate() {
         return date;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 
     @Override

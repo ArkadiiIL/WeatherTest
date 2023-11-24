@@ -7,6 +7,8 @@ public class WeatherInfoDto {
     private String main;
     @SerializedName("description")
     private String description;
+    @SerializedName("icon")
+    private String icon;
 
     public String getMain() {
         return main;
@@ -14,5 +16,9 @@ public class WeatherInfoDto {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getIcon() {
+        return icon;
     }
 }

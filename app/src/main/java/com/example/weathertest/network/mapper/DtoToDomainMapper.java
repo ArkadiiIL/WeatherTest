@@ -56,7 +56,8 @@ public class DtoToDomainMapper {
                 weatherInfoDto.getDescription(),
                 response.getTemperature().getTemperature(),
                 response.getTemperature().getHumidity(),
-                response.getDate()
+                response.getDate(),
+                weatherInfoDto.getIcon()
         );
     }
 }

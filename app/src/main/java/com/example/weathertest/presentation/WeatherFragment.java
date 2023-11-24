@@ -16,6 +16,7 @@ import com.example.weathertest.domain.DomainLocation;
 import com.example.weathertest.domain.Weather;
 import com.example.weathertest.domain.WeatherInfo;
 import com.example.weathertest.presentation.adapters.ForecastAdapter;
+import com.squareup.picasso.Picasso;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -27,6 +28,8 @@ public class WeatherFragment extends Fragment {
     private FragmentWeatherBinding binding;
     private WeatherViewModel viewModel;
     private CompositeDisposable compositeDisposable;
+    private final static String ICON_URL_START = "https://openweathermap.org/img/wn/";
+    private final static String ICON_URL_END = "@2x.png";
 
     @Nullable
     @Override
@@ -104,11 +107,14 @@ public class WeatherFragment extends Fragment {
 
     private void setWeatherData(WeatherInfo weatherInfo) {
         Weather weather = weatherInfo.getWeather();
+        String url = ICON_URL_START + weather.getIcon() + ICON_URL_END;
         binding.tvTemperature.setText(getTemp(weather.getTemperature()));
         binding.tvCityName.setText(weatherInfo.getCity().getName());
         binding.tvMainWeather.setText(weather.getWeatherName());
         binding.tvDescription.setText(weather.getWeatherDescription());
         binding.tvHumidity.setText(getHumidity(weather.getHumidity()));
+        Picasso.get().load(url).into(binding.ivWeather);
+
     }
 
     private String getTemp(double temperature) {
